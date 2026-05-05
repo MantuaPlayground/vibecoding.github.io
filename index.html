@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reading Dashboard</title>
+  <style>
+    :root {
+      --bg: #0f0f0f;
+      --surface: #1a1a1a;
+      --surface2: #242424;
+      --border: #2e2e2e;
+      --text: #e8e8e8;
+      --muted: #888;
+      --accent: #c9a96e;
+      --accent2: #7eb8c9;
+      --current: #4a7c59;
+      --next: #5a4a7c;
+      --star: #c9a96e;
+      --nostar: #3a3a3a;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      padding: 2rem 1rem;
+    }
+    .container { max-width: 1100px; margin: 0 auto; }
+    header {
+      margin-bottom: 3rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 2rem;
+    }
+    header h1 {
+      font-size: 2rem;
+      font-weight: 300;
+      letter-spacing: 0.05em;
+      color: var(--accent);
+    }
+    .updated { color: var(--muted); font-size: 0.85rem; margin-top: 0.5rem; }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 1rem;
+      margin-bottom: 3rem;
+    }
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.25rem;
+      text-align: center;
+    }
+    .stat-number {
+      font-size: 2.5rem;
+      font-weight: 600;
+      color: var(--accent);
+      line-height: 1;
+    }
+    .stat-label { color: var(--muted); font-size: 0.8rem; margin-top: 0.4rem; text-transform: uppercase; letter-spacing: 0.08em; }
+    section { margin-bottom: 3rem; }
+    section h2 {
+      font-size: 1rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .books-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 1rem;
+    }
+    .book-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.1rem;
+      transition: border-color 0.15s;
+    }
+    .book-card:hover { border-color: var(--accent); }
+    .book-card.current { border-left: 3px solid var(--current); }
+    .book-card.next { border-left: 3px solid var(--next); }
+    .book-title { font-weight: 500; font-size: 0.95rem; margin-bottom: 0.25rem; }
+    .book-author { color: var(--muted); font-size: 0.82rem; margin-bottom: 0.5rem; }
+    .book-rating { color: var(--star); font-size: 0.9rem; letter-spacing: 0.05em; }
+    .no-rating { color: var(--nostar); font-size: 0.78rem; }
+    .book-date { color: var(--accent2); font-size: 0.78rem; margin-top: 0.4rem; }
+    .progress-badge {
+      display: inline-block;
+      background: rgba(74, 124, 89, 0.2);
+      border: 1px solid var(--current);
+      color: #7dbf8e;
+      font-size: 0.75rem;
+      padding: 0.15rem 0.5rem;
+      border-radius: 4px;
+      margin-top: 0.4rem;
+    }
+    .tags { margin-top: 0.5rem; display: flex; flex-wrap: wrap; gap: 0.3rem; }
+    .tag {
+      background: var(--surface2);
+      color: var(--muted);
+      font-size: 0.7rem;
+      padding: 0.1rem 0.45rem;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+    }
+    .empty { color: var(--muted); font-style: italic; font-size: 0.9rem; }
+    footer {
+      margin-top: 4rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 0.8rem;
+      text-align: center;
+    }
+    @media (max-width: 600px) {
+      .books-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>Reading Dashboard</h1>
+    <div class="updated">Updated Tuesday, May 5, 2026</div>
+  </header>
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-number">27</div>
+      <div class="stat-label">Reading Now</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">0</div>
+      <div class="stat-label">Read in 2026</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">10</div>
+      <div class="stat-label">Total Read</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">401</div>
+      <div class="stat-label">In Queue</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">2.2</div>
+      <div class="stat-label">Avg Rating</div>
+    </div>
+  </div>
+
+  
+  <section>
+    <h2>Currently Reading</h2>
+    <div class="books-grid">
+      <div class="book-card current">
+        <div class="book-meta">
+          <div class="book-title">The Dark Tide (Ty Hauck Book 1)</div>
+          <div class="book-author">by Andrew Gross</div>
+          
+          
+        </div>
+      </div>
+      <div class="book-card current">
+        <div class="book-meta">
+          <div class="book-title">Smart Brevity</div>
+          <div class="book-author">by Roy Schwartz &amp; Mike Allen &amp; Jim VandeHei</div>
+          
+          
+        </div>
+      </div>
+      <div class="book-card current">
+        <div class="book-meta">
+          <div class="book-title">The One Man</div>
+          <div class="book-author">by Andrew Gross</div>
+          
+          
+        </div>
+      </div>
+      <div class="book-card current">
+        <div class="book-meta">
+          <div class="book-title">Reckless: A Novel (Ty Hauck Book 3)</div>
+          <div class="book-author">by Andrew Gross</div>
+          
+          
+        </div>
+      </div>
+      <div class="book-card current">
+        <div class="book-meta">
+          <div class="book-title">The Moscow Rules</div>
+          <div class="book-author">by Jonna Mendez &amp; Antonio J. Mendez</div>
+          
+          
+        </div>
+      </div>
+      <div class="book-card current">
+        <div class="book-meta">
+          <div class="book-title">Don't Look Twice: A Novel (Ty Hauck Book 2)</div>
+          <div class="book-author">by Andrew Gross</div>
+          
+          
+        </div>
+      </div>
+      <div class="book-card current">
+        <div class="book-meta">
+          <div class="book-title">Surface Detail</div>
+          <div class="book-author">by Iain M. Banks</div>
+          
+          
+        </div>
+      </div>
+      <div class="book-card current">
+        <div class="book-meta">
+          <div class="book-title">One Step Behind (Kurt Wallander Mystery Book 7)</div>
+          <div class="book-author">by Henning Mankell</div>
+          
+          
+        </div>
+      </div>
+      <div class="book-card current">
+        <div class="book-meta">
+          <div class="book-title">Spy Dust: Two Masters of Disguise Reveal the Tools and Operations that Helped Win the Cold War</div>
+          <div class="book-author">by Bruce Henderson &amp; Jonna Mendez &amp; Antonio Mendez</div>
+          
+          
+        </div>
+      </div>
+      <div class="book-card current">
+        <div class="book-meta">
+          <div class="book-title">A Brief History of Time</div>
+          <div class="book-author">by Stephen Hawking</div>
+          
+          
+        </div>
+      </div>
+      <div class="book-card current">
+        <div class="book-meta">
+          <div class="book-title">Exit Strategy (Jack Reacher)</div>
+          <div class="book-author">by Andrew Child &amp; Lee Child</div>
+          
+          
+        </div>
+      </div>
+      <div class="book-card current">
+        <div class="book-meta">
+          <div class="book-title">Firewall (Kurt Wallander Mystery Book 8)</div>
+          <div class="book-author">by Henning Mankell</div>
+          
+          
+        </div>
+      </div>
+      <div class="book-card current">
+        <div class="book-meta">
+          <div class="book-title">Matterhorn</div>
+          <div class="book-author">by Christopher Reich</div>
+          
+          
+        </div>
+      </div>
+      <div class="book-card current">
+        <div class="book-meta">
+          <div class="book-title">The Forever War</div>
+          <div class="book-author">by Dexter Filkins</div>
+          
+          
+        </div>
+      </div>
+      <div class="book-card current">
+        <div class="book-meta">
+          <div class="book-title">Watergate: A New History</div>
+          <div class="book-author">by Garrett M. Graff</div>
+          
+          
+        </div>
+      </div>
+      <div class="book-card current">
+        <div class="book-meta">
+          <div class="book-title">The Surrendered</div>
+          <div class="book-author">by Chang-rae Lee</div>
+          
+          
+        </div>
+      </div>
+      <div class="book-card current">
+        <div class="book-meta">
+          <div class="book-title">The Tale of Genji (Tuttle Classics)</div>
+          <div class="book-author">by Kencho Suematsu &amp; Murasaki Shikibu</div>
+          
+          
+        </div>
+      </div>
+      <div class="book-card current">
+        <div class="book-meta">
+          <div class="book-title">How To Know Your Self</div>
+          <div class="book-author">by J. Eric Oliver</div>
+          
+          
+        </div>
+      </div>
+      <div class="book-card current">
+        <div class="book-meta">
+          <div class="book-title">Making the best of what's left : when we're too old to get the chairs reupholstered</div>
+          <div class="book-author">by Judith Viorst</div>
+          
+          
+        </div>
+      </div>
+      <div class="book-card current">
+        <div class="book-meta">
+          <div class="book-title">The colony</div>
+          <div class="book-author">by Annika Norlin</div>
+          
+          
+        </div>
+      </div>
+      <div class="book-card current">
+        <div class="book-meta">
+          <div class="book-title">There is no place for us : working and homeless in America</div>
+          <div class="book-author">by Brian Goldstone</div>
+          
+          
+        </div>
+      </div>
+      <div class="book-card current">
+        <div class="book-meta">
+          <div class="book-title">The Good Liar</div>
+          <div class="book-author">by Denise Mina</div>
+          
+          
+        </div>
+      </div>
+      <div class="book-card current">
+        <div class="book-meta">
+          <div class="book-title">Life, the Universe and Everything</div>
+          <div class="book-author">by Douglas Adams</div>
+          
+          
+        </div>
+      </div>
+      <div class="book-card current">
+        <div class="book-meta">
+          <div class="book-title">Ready Player One</div>
+          <div class="book-author">by Ernest Cline</div>
+          
+          
+        </div>
+      </div>
+      <div class="book-card current">
+        <div class="book-meta">
+          <div class="book-title">A Place Called Yellowstone</div>
+          <div class="book-author">by Randall K. Wilson</div>
+          
+          
+        </div>
+      </div>
+      <div class="book-card current">
+        <div class="book-meta">
+          <div class="book-title">A history of Israel from the rise of Zionism to our time</div>
+          <div class="book-author">by Howard Morley Sachar</div>
+          
+          
+        </div>
+      </div>
+      <div class="book-card current">
+        <div class="book-meta">
+          <div class="book-title">The sword of freedom : Israel, Mossad, and the secret war</div>
+          <div class="book-author">by Yossi Cohen</div>
+          
+          
+        </div>
+      </div></div>
+  </section>
+
+  
+  <section>
+    <h2>Up Next</h2>
+    <div class="books-grid">
+      <div class="book-card next">
+        <div class="book-meta">
+          <div class="book-title">The Keeper of Lost Causes: The First Department Q Novel</div>
+          <div class="book-author">by Jussi Adler-Olsen</div>
+        </div>
+      </div>
+      <div class="book-card next">
+        <div class="book-meta">
+          <div class="book-title">The 4% Universe: Dark Matter, Dark Energy, and the Race to Discover the Rest of Reality</div>
+          <div class="book-author">by Richard Panek</div>
+        </div>
+      </div>
+      <div class="book-card next">
+        <div class="book-meta">
+          <div class="book-title">The greatest story ever told--so far : why are we here?</div>
+          <div class="book-author">by Lawrence M. Krauss</div>
+        </div>
+      </div>
+      <div class="book-card next">
+        <div class="book-meta">
+          <div class="book-title">Superconvergence : how the genetics, biotech, and AI revolutions will transform our lives, work, and world</div>
+          <div class="book-author">by Jamie Frederic Metzl</div>
+        </div>
+      </div></div>
+  </section>
+
+  <section>
+    <h2>Recently Finished</h2>
+    <div class="books-grid">
+      <div class="book-card">
+        <div class="book-meta">
+          <div class="book-title">Why We Remember</div>
+          <div class="book-author">by Charan Ranganath</div>
+          <div class="book-rating"><span class="no-rating">unrated</span></div>
+          
+          <div class="tags"><span class="tag">RIPPED</span></div>
+        </div>
+      </div>
+      <div class="book-card">
+        <div class="book-meta">
+          <div class="book-title">Husk: A Post-Apocalyptic Technothriller (Book One of the Meru Initiative)</div>
+          <div class="book-author">by Nathaniel Eliason</div>
+          <div class="book-rating"><span class="no-rating">unrated</span></div>
+          
+          <div class="tags"><span class="tag">RIPPED</span></div>
+        </div>
+      </div>
+      <div class="book-card">
+        <div class="book-meta">
+          <div class="book-title">The Peripheral</div>
+          <div class="book-author">by William Gibson</div>
+          <div class="book-rating">★★☆☆☆</div>
+          
+          <div class="tags"><span class="tag">ACQUIRED</span></div>
+        </div>
+      </div>
+      <div class="book-card">
+        <div class="book-meta">
+          <div class="book-title">The Fifth Risk: Undoing Democracy</div>
+          <div class="book-author">by Michael Lewis</div>
+          <div class="book-rating">★★☆☆☆</div>
+          
+          <div class="tags"><span class="tag">ACQUIRED</span></div>
+        </div>
+      </div>
+      <div class="book-card">
+        <div class="book-meta">
+          <div class="book-title">The Rest of Our Lives: A Novel</div>
+          <div class="book-author">by Ben Markovits</div>
+          <div class="book-rating"><span class="no-rating">unrated</span></div>
+          
+          <div class="tags"><span class="tag">RIPPED</span></div>
+        </div>
+      </div>
+      <div class="book-card">
+        <div class="book-meta">
+          <div class="book-title">An Odyssey: A Father, A Son, An Epic</div>
+          <div class="book-author">by Daniel Mendelsohn</div>
+          <div class="book-rating"><span class="no-rating">unrated</span></div>
+          
+          <div class="tags"><span class="tag">RIPPED</span></div>
+        </div>
+      </div>
+      <div class="book-card">
+        <div class="book-meta">
+          <div class="book-title">That will never work : the birth of Netflix and the amazing life of an idea</div>
+          <div class="book-author">by Marc Randolph</div>
+          <div class="book-rating"><span class="no-rating">unrated</span></div>
+          
+          <div class="tags"><span class="tag">fcpl-out-brian</span></div>
+        </div>
+      </div>
+      <div class="book-card">
+        <div class="book-meta">
+          <div class="book-title">The wild dark : finding the night sky in the age of light</div>
+          <div class="book-author">by Craig Childs</div>
+          <div class="book-rating"><span class="no-rating">unrated</span></div>
+          
+          <div class="tags"><span class="tag">fcpl-out-brian</span></div>
+        </div>
+      </div>
+      <div class="book-card">
+        <div class="book-meta">
+          <div class="book-title">Things That Matter</div>
+          <div class="book-author">by Charles Krauthammer</div>
+          <div class="book-rating"><span class="no-rating">unrated</span></div>
+          
+          <div class="tags"><span class="tag">ACQUIRED</span></div>
+        </div>
+      </div>
+      <div class="book-card">
+        <div class="book-meta">
+          <div class="book-title">Awareness</div>
+          <div class="book-author">by Anthony De Mello</div>
+          <div class="book-rating"><span class="no-rating">unrated</span></div>
+          
+          <div class="tags"><span class="tag">ACQUIRED</span></div>
+        </div>
+      </div></div>
+  </section>
+
+  <footer>
+    Built with <a href="https://www.notion.so" style="color: var(--accent);">Notion Workers</a> &middot; 2132 books tracked
+  </footer>
+</div>
+</body>
+</html>
